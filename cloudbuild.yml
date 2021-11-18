@@ -7,7 +7,7 @@ steps:
           path: '/build/source-code'
       args: ['cp', '-T', '-r', './', '/build/source-code']
 
-     - id: app-docker-image-build
+    - id: app-docker-image-build
       name: gcr.io/kaniko-project/executor
       waitFor:
         - 'app-source-code'
@@ -22,4 +22,26 @@ steps:
         "--destination=gcr.io/$PROJECT_ID/treinamento-django:$SHORT_SHA",
         "--destination=gcr.io/$PROJECT_ID/treinamento-django:latest",
         "--cache=true",
-        "--cache-ttl=12h"] 
+        "--cache-ttl=12h"]
+
+    - id: "make migrations"
+      name: "gcr.io/google-appengine/exec-wrapper"
+      args:
+        [
+          "-i",
+          "gcr.io/$PROJECT_ID/treinamento-django",
+          "-s",
+          "treinamento-django-332522:us-central1:django-db",
+          "-e",
+          "POSTGRES_HOST=200~34.122.25.112",
+          "-e",
+          "POSTGRES_DB=postgres",
+          "-e",
+          "POSTGRES_USER=postgres",
+          "-e",
+          "POSTGRES_PASSWORD=123Mudar!",
+          "--",
+          "python",
+          "manage.py",
+          "makemigrations",
+        ] 
