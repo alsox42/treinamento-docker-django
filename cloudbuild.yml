@@ -1,0 +1,7 @@
+ - id: 'app-source-code'
+      name: 'alpine'
+      waitFor: ['-']
+      volumes:
+        - name: 'source-code'
+          path: '/build/source-code'
+      args: ['cp', '-T', '-r', './', '/build/source-code']
