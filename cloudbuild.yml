@@ -1,7 +1,25 @@
- - id: 'app-source-code'
+steps:
+    - id: 'app-source-code'
       name: 'alpine'
       waitFor: ['-']
       volumes:
         - name: 'source-code'
           path: '/build/source-code'
       args: ['cp', '-T', '-r', './', '/build/source-code']
+
+     - id: app-docker-image-build
+      name: gcr.io/kaniko-project/executor
+      waitFor:
+        - 'app-source-code'
+      volumes:
+        - name: 'source-code'
+          path: '/build/source-code'
+      args: [
+        "--dockerfile=Dockerfile",
+        "--context=/build/source-code",
+        "--build-arg",
+        "app_version=$SHORT_SHA",
+        "--destination=gcr.io/$PROJECT_ID/treinamento-django:$SHORT_SHA",
+        "--destination=gcr.io/$PROJECT_ID/treinamento-django:latest",
+        "--cache=true",
+        "--cache-ttl=12h"] 
